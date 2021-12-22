@@ -1,6 +1,9 @@
 using FluentAssertions;
 using System.ComponentModel;
 using Xunit;
+using System.Linq;
+using System;
+
 namespace MartianRoverTests;
 
 [Trait("Le robot martien", "doit")]
@@ -10,9 +13,10 @@ public class MartianRoverUnitTest
     [DisplayName("être bien positionné à son atterrissage")]
     public void mars_rover_should_initialize_correctly()
     {
-        var rover = new MarsRover(position: new[] { 0, 0 }, direction: "N", grid: new[] { 50, 50 });
+        var rover = new MarsRover(position: new[] { 2,1 }, direction: "N", grid: new[] { 50, 51 });
 
-        rover.Position.Should().BeEquivalentTo(new[] { 0, 0 });
+        rover.Position.Should().BeEquivalentTo(new[] { 2, 1 }, a => a.WithStrictOrdering());
+
         rover.Direction.Should().Be("N");
     }
 
@@ -29,10 +33,16 @@ public class MartianRoverUnitTest
 
         rover.Direction.Should().Be(expectedDirection);
     }
-
+    /*
+     *      N
+     *    O   E
+     *      S
+     */
     [Theory]
     [InlineData("N", "E")]
     [InlineData("O", "N")]
+    [InlineData("S", "O")]
+    [InlineData("E", "S")]
     public void mars_rover_look_the_right_direction_when_turn_on_right(string initialDirection, string expectedDirection)
     {
         var rover = new MarsRover(position: new[] { 0, 0 }, direction: initialDirection, grid: new[] { 50, 50 });
@@ -44,9 +54,31 @@ public class MartianRoverUnitTest
 
 }
 
+
+public static class CardinalPointHelper{
+    const string DIRECTIONS = "NESO";
+
+    public static string ToRight(string currentDirection){
+
+        var newDirectionIndex = DIRECTIONS.IndexOf(currentDirection)+1;
+        if (newDirectionIndex > 3){
+            newDirectionIndex = 0;
+        }
+        return DIRECTIONS[newDirectionIndex].ToString();
+    }
+
+    public static string ToLeft(string currentDirection){
+        var newDirectionIndex = DIRECTIONS.IndexOf(currentDirection)-1;
+        if (newDirectionIndex < 0)
+            newDirectionIndex = 3;
+        return DIRECTIONS[newDirectionIndex].ToString();
+    }
+}
 public class MarsRover
 {
     private readonly int[] _grid;
+  
+
     public int[] Position { get; private set; }
     public string Direction { get; private set; }
 
@@ -57,22 +89,19 @@ public class MarsRover
         Direction = direction;
     }
 
-    public void Move(string command)
+    private void Turn(string command)
     {
         if (command == "r")
-        {
-            Direction = "E";
-            return;
-        }
+            Direction = CardinalPointHelper.ToRight(Direction);
+        else
+            Direction = CardinalPointHelper.ToLeft(Direction);
+    }
+    
 
-
-        Direction = Direction switch
-        {
-            "N" => "O",
-            "O" => "S",
-            "S" => "E",
-            _ => "N"
-        };
-
+    public void Move(string command)
+    {
+        Turn(command);
     }
 }
+
+interface OrientationModi
