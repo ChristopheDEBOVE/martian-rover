@@ -52,6 +52,8 @@ public class MartianRoverUnitTest
         rover.Direction.Should().Be(expectedDirection);
     }
 
+    /// prochain test multicommande ou avant arrière
+
 }
 
 
@@ -103,5 +105,3 @@ public class MarsRover
         Turn(command);
     }
 }
-
-interface OrientationModi
