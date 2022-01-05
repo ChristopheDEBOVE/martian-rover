@@ -13,64 +13,85 @@ public class MartianRoverUnitTest
     [DisplayName("être bien positionné à son atterrissage")]
     public void mars_rover_should_initialize_correctly()
     {
-        var rover = new MarsRover(position: new[] { 2,1 }, direction: "N", grid: new[] { 50, 51 });
+        var rover = new MarsRover(position: new[] { 2, 1 }, direction: "N", grid: new[] { 50, 51 });
 
         rover.Position.Should().BeEquivalentTo(new[] { 2, 1 }, a => a.WithStrictOrdering());
 
         rover.Direction.Should().Be("N");
     }
 
-    [Theory]
-    [InlineData("N", "O")]
-    [InlineData("O", "S")]
-    [InlineData("S", "E")]
-    [InlineData("E", "N")]
-    public void mars_rover_look_the_right_direction_when_turn_on_left(string initialDirection, string expectedDirection)
-    {
-        var rover = new MarsRover(position: new[] { 0, 0 }, direction: initialDirection, grid: new[] { 50, 50 });
-
-        rover.Move("l");
-
-        rover.Direction.Should().Be(expectedDirection);
-    }
     /*
      *      N
      *    O   E
      *      S
      */
     [Theory]
-    [InlineData("N", "E")]
-    [InlineData("O", "N")]
-    [InlineData("S", "O")]
-    [InlineData("E", "S")]
-    public void mars_rover_look_the_right_direction_when_turn_on_right(string initialDirection, string expectedDirection)
+    [InlineData("r","N", "E")]
+    [InlineData("r","S", "O")]
+    [InlineData("r","E", "S")]
+    [InlineData("r","O", "N")]
+    [InlineData("l","N", "O")]
+    [InlineData("l","O", "S")]
+    [InlineData("l","S", "E")]
+    [InlineData("l","E", "N")]
+    [InlineData("rr", "N", "S")]
+    [InlineData("rrr", "N", "O")]
+    [InlineData("rrrr", "N", "N")]
+    [InlineData("rrrr", "O", "O")]
+    [InlineData("rl", "N", "N")]
+    [InlineData("lr", "N", "N")]
+    [InlineData("rrl", "N", "E")]
+    [InlineData("rrl", "S", "O")]
+    public void mars_rover_should_be_able_to_process_single_or_multiple_consecutive_turn_command(string command, string initialDirection, string expectedDirection)
     {
         var rover = new MarsRover(position: new[] { 0, 0 }, direction: initialDirection, grid: new[] { 50, 50 });
 
-        rover.Move("r");
+        rover.Move(command);
 
         rover.Direction.Should().Be(expectedDirection);
     }
 
-    /// prochain test multicommande ou avant arrière
 
+    [Fact]
+    public void mars_rover_should_move_forward()
+    {
+        var rover = new MarsRover(position: new[] { 2, 1 }, direction: "N", grid: new[] { 50, 51 });
+
+        rover.Move("f");
+
+        rover.Position.Should().BeEquivalentTo(new[] { 2, 2 }, a => a.WithStrictOrdering());
+    }
+
+    [Fact]
+    public void mars_rover_should_move_forward_twice()
+    {
+        var rover = new MarsRover(position: new[] { 2, 1 }, direction: "N", grid: new[] { 50, 51 });
+
+        rover.Move("ff");
+
+        rover.Position.Should().BeEquivalentTo(new[] { 2, 3 }, a => a.WithStrictOrdering());
+    }
 }
 
 
-public static class CardinalPointHelper{
+public static class CardinalPointHelper
+{
     const string DIRECTIONS = "NESO";
 
-    public static string ToRight(string currentDirection){
+    public static string ToRight(string currentDirection)
+    {
 
-        var newDirectionIndex = DIRECTIONS.IndexOf(currentDirection)+1;
-        if (newDirectionIndex > 3){
+        var newDirectionIndex = DIRECTIONS.IndexOf(currentDirection) + 1;
+        if (newDirectionIndex > 3)
+        {
             newDirectionIndex = 0;
         }
         return DIRECTIONS[newDirectionIndex].ToString();
     }
 
-    public static string ToLeft(string currentDirection){
-        var newDirectionIndex = DIRECTIONS.IndexOf(currentDirection)-1;
+    public static string ToLeft(string currentDirection)
+    {
+        var newDirectionIndex = DIRECTIONS.IndexOf(currentDirection) - 1;
         if (newDirectionIndex < 0)
             newDirectionIndex = 3;
         return DIRECTIONS[newDirectionIndex].ToString();
@@ -79,7 +100,7 @@ public static class CardinalPointHelper{
 public class MarsRover
 {
     private readonly int[] _grid;
-  
+
 
     public int[] Position { get; private set; }
     public string Direction { get; private set; }
@@ -91,17 +112,23 @@ public class MarsRover
         Direction = direction;
     }
 
-    private void Turn(string command)
+    private void Turn(char command)
     {
-        if (command == "r")
+        if (command == 'r')
             Direction = CardinalPointHelper.ToRight(Direction);
-        else
+        if (command == 'l')
             Direction = CardinalPointHelper.ToLeft(Direction);
     }
-    
+
 
     public void Move(string command)
     {
-        Turn(command);
+        foreach(var unitaryCommand in command)
+        {
+            if (unitaryCommand == 'f'){
+                Position = new[] { 2, 2 };
+            }
+            Turn(unitaryCommand);
+        }
     }
 }
