@@ -51,25 +51,32 @@ public class MartianRoverUnitTest
         rover.Direction.Should().Be(expectedDirection);
     }
 
-
-    [Fact]
-    public void mars_rover_should_move_forward()
+    [Theory]
+    [InlineData("f", "N", 2, 1, 2, 2,"droit vers le nord 1 fois")]
+    [InlineData("f", "S", 2, 1, 2, 0, "droit vers le sud 1 fois")]
+    [InlineData("ff", "N", 2, 1, 2, 3, "droit vers le nord 2 fois")]
+    [InlineData("ff", "S", 2, 1, 2,-1, "droit vers le sud 2 fois")]
+    [InlineData("f", "O", 2, 1, 1, 1, "droit vers l'ouest 1 fois")]
+    [InlineData("ff", "O", 2, 1, 0, 1, "droit vers l'ouest 2 fois")]
+    [InlineData("f", "E", 2, 1, 3, 1, "droit vers l'est 1 fois")]
+    public void mars_rover_should_move_forward(string command, string initialOrientation, int initialXPosition, int initialYPosition, int expectedXPosition, int expectedYPosition, string because)
     {
-        var rover = new MarsRover(position: new[] { 2, 1 }, direction: "N", grid: new[] { 50, 51 });
+        var rover = new MarsRover(position: new[] { initialXPosition, initialYPosition }, direction: initialOrientation, grid: new[] { 50, 51 });
 
-        rover.Move("f");
+        rover.Move(command);
 
-        rover.Position.Should().BeEquivalentTo(new[] { 2, 2 }, a => a.WithStrictOrdering());
+        rover.Position.Should().BeEquivalentTo(new[] { expectedXPosition, expectedYPosition }, a => a.WithStrictOrdering(), because);
     }
 
-    [Fact]
-    public void mars_rover_should_move_forward_twice()
+    [Theory]
+    [InlineData("b", "N", 2, 1, 2, 0, "en arrière  1 fois en regardant vers le nord")] 
+    public void mars_rover_should_move_backward(string command, string initialOrientation, int initialXPosition, int initialYPosition, int expectedXPosition, int expectedYPosition, string because)
     {
-        var rover = new MarsRover(position: new[] { 2, 1 }, direction: "N", grid: new[] { 50, 51 });
+        var rover = new MarsRover(position: new[] { initialXPosition, initialYPosition }, direction: initialOrientation, grid: new[] { 50, 51 });
 
-        rover.Move("ff");
+        rover.Move(command);
 
-        rover.Position.Should().BeEquivalentTo(new[] { 2, 3 }, a => a.WithStrictOrdering());
+        rover.Position.Should().BeEquivalentTo(new[] { expectedXPosition, expectedYPosition }, a => a.WithStrictOrdering(), because);
     }
 }
 
@@ -80,7 +87,6 @@ public static class CardinalPointHelper
 
     public static string ToRight(string currentDirection)
     {
-
         var newDirectionIndex = DIRECTIONS.IndexOf(currentDirection) + 1;
         if (newDirectionIndex > 3)
         {
@@ -97,18 +103,22 @@ public static class CardinalPointHelper
         return DIRECTIONS[newDirectionIndex].ToString();
     }
 }
+
+public record Position(int X, int Y);
+
 public class MarsRover
 {
     private readonly int[] _grid;
 
 
-    public int[] Position { get; private set; }
+    public int[] Position { get { return new[] { _position.X, _position.Y }; } }
+    private Position _position;
     public string Direction { get; private set; }
 
     public MarsRover(int[] position, string direction, int[] grid)
     {
         _grid = grid;
-        Position = position;
+        _position = new Position(position[0], position[1]);
         Direction = direction;
     }
 
@@ -126,8 +136,26 @@ public class MarsRover
         foreach(var unitaryCommand in command)
         {
             if (unitaryCommand == 'f'){
-                Position = new[] { 2, 2 };
-            }
+                var newX = Position[0];
+                var newY = Position[1];
+                switch (Direction)
+                {
+                    case "O":
+                        newX += -1;
+                        break;
+                    case "E":
+                        newX += 1;
+                        break;
+                    case "S":
+                        newY += -1;
+                        break;
+                    case "N":
+                        newY += 1;
+                        break;
+                }
+
+                _position = _position with {X =newX , Y= newY };                
+            } 
             Turn(unitaryCommand);
         }
     }
