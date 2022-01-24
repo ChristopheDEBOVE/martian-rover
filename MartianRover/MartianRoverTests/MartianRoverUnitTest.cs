@@ -1,8 +1,6 @@
 using FluentAssertions;
 using System.ComponentModel;
 using Xunit;
-using System.Linq;
-using System;
 
 namespace MartianRoverTests;
 
@@ -69,7 +67,8 @@ public class MartianRoverUnitTest
     }
 
     [Theory]
-    [InlineData("b", "N", 2, 1, 2, 0, "en arrière  1 fois en regardant vers le nord")] 
+    [InlineData("b", "N", 2, 1, 2, 0, "en arrière  1 fois en regardant vers le nord")]
+    [InlineData("b", "S", 2, 1, 2, 2, "en arrière  1 fois en regardant vers le nord")]
     public void mars_rover_should_move_backward(string command, string initialOrientation, int initialXPosition, int initialYPosition, int expectedXPosition, int expectedYPosition, string because)
     {
         var rover = new MarsRover(position: new[] { initialXPosition, initialYPosition }, direction: initialOrientation, grid: new[] { 50, 51 });
@@ -77,86 +76,5 @@ public class MartianRoverUnitTest
         rover.Move(command);
 
         rover.Position.Should().BeEquivalentTo(new[] { expectedXPosition, expectedYPosition }, a => a.WithStrictOrdering(), because);
-    }
-}
-
-
-public static class CardinalPointHelper
-{
-    const string DIRECTIONS = "NESO";
-
-    public static string ToRight(string currentDirection)
-    {
-        var newDirectionIndex = DIRECTIONS.IndexOf(currentDirection) + 1;
-        if (newDirectionIndex > 3)
-        {
-            newDirectionIndex = 0;
-        }
-        return DIRECTIONS[newDirectionIndex].ToString();
-    }
-
-    public static string ToLeft(string currentDirection)
-    {
-        var newDirectionIndex = DIRECTIONS.IndexOf(currentDirection) - 1;
-        if (newDirectionIndex < 0)
-            newDirectionIndex = 3;
-        return DIRECTIONS[newDirectionIndex].ToString();
-    }
-}
-
-public record Position(int X, int Y);
-
-public class MarsRover
-{
-    private readonly int[] _grid;
-
-
-    public int[] Position { get { return new[] { _position.X, _position.Y }; } }
-    private Position _position;
-    public string Direction { get; private set; }
-
-    public MarsRover(int[] position, string direction, int[] grid)
-    {
-        _grid = grid;
-        _position = new Position(position[0], position[1]);
-        Direction = direction;
-    }
-
-    private void Turn(char command)
-    {
-        if (command == 'r')
-            Direction = CardinalPointHelper.ToRight(Direction);
-        if (command == 'l')
-            Direction = CardinalPointHelper.ToLeft(Direction);
-    }
-
-
-    public void Move(string command)
-    {
-        foreach(var unitaryCommand in command)
-        {
-            if (unitaryCommand == 'f'){
-                var newX = Position[0];
-                var newY = Position[1];
-                switch (Direction)
-                {
-                    case "O":
-                        newX += -1;
-                        break;
-                    case "E":
-                        newX += 1;
-                        break;
-                    case "S":
-                        newY += -1;
-                        break;
-                    case "N":
-                        newY += 1;
-                        break;
-                }
-
-                _position = _position with {X =newX , Y= newY };                
-            } 
-            Turn(unitaryCommand);
-        }
     }
 }
