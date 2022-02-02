@@ -1,4 +1,8 @@
 <div data-martian-rover-command-panel>
-    <button data-martian-rover-send-command-action> </button>
+    <input type="text" @bind="Command"   data-martian-rover-command-input />
+    <button data-martian-rover-send-command-action disabled="@(Command!="f")">Envoyer</button>
 </div>
 
+@code { 
+    public string Command {get;set;}
+}
