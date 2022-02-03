@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AngleSharp.Html.Dom;
+using AngleSharpWrappers;
 using Xunit;
 
 namespace MartianRoverTests
@@ -51,14 +53,10 @@ namespace MartianRoverTests
             using var ctx = new TestContext();
             var cut = ctx.RenderComponent<MartianRoverCommandPanel>();
             
-            
-            var input = cut.Find("[data-martian-rover-command-panel] [data-martian-rover-command-input]");
-            input.SetAttribute("value", "f");
-            
+            var input =  cut.Find("[data-martian-rover-command-panel] [data-martian-rover-command-input]");
+            input.Change("f");
             cut.Instance.Command.Should().Be("f");
-            //cut.Find("[data-martian-rover-command-panel] [data-martian-rover-command-input]").GetAttribute("value").Should().Be("f");
             var bouton = cut.Find("[data-martian-rover-command-panel] [data-martian-rover-send-command-action]");
-            var attr = bouton.Attributes;
             bouton.HasAttribute("disabled").Should().BeFalse();
             
         }
