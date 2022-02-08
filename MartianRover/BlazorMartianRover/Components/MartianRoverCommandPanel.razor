@@ -4,11 +4,13 @@
 </div>
 
 @code {
-
+    // TODO : extraire logique dans un razor.cs
+    
     [Inject]
     public ICommandValidator  CommandValidator {get;set;}
 
     public string Command {get;set;}
 
+    // TODO : cleanup, commandValidator doit toujours etre présent
     public bool NePeutPasSaisir() =>(!CommandValidator?.Validate(Command))??true;
 }

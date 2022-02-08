@@ -10,6 +10,8 @@ namespace MartianRoverTests
 {
     public class BlazorTest : IDisposable
     {
+        
+        // TODO : phase de refacto : data-martian-rover*
         readonly TestContext ctx;
         IRenderedComponent<MartianRoverCommandPanel> GetComponent() => ctx.RenderComponent<MartianRoverCommandPanel>();
         private Mock<ICommandValidator> _mockCommandValidator = new Mock<ICommandValidator>(); 
@@ -79,6 +81,8 @@ namespace MartianRoverTests
             bouton.HasAttribute("disabled").Should().BeTrue();
         }
 
+        // TODO Event send command
+        
         public void Dispose()
         {
             ctx.Dispose();
