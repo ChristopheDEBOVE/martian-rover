@@ -4,6 +4,7 @@ using FluentAssertions;
 using System;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
+using MartianRover.Application;
 
 namespace MartianRoverTests
 {
@@ -16,7 +17,7 @@ namespace MartianRoverTests
         public BlazorTest()
         {
             ctx = new TestContext();
-            ctx.Services.AddSingleton<ICommandValidator>(new CommandValidatorStub());
+            ctx.Services.AddSingleton<ICommandValidator>(new CommandValidator());
  
         }
 
@@ -52,8 +53,7 @@ namespace MartianRoverTests
         public void Lorsque_l_utilisateur_saisi_une_commande_valide_alors_il_peut_lenvoyer_au_rover()
         { 
 
-            var uneCommandeValide = "kldmskldm";
-            ctx.Services.AddSingleton<ICommandValidator>(new CommandValidatorStub(true, uneCommandeValide));
+            var uneCommandeValide = "f"; 
             var cut = GetComponent();
 
             var input =  cut.Find("[data-martian-rover-command-panel] [data-martian-rover-command-input]");
@@ -63,33 +63,23 @@ namespace MartianRoverTests
             bouton.HasAttribute("disabled").Should().BeFalse();
         }
 
+        [Fact]
+        public void Lorsque_l_utilisateur_saisi_une_commande_invalide_alors_il_ne_peut_pas_lenvoyer_au_rover()
+        {
+
+            var uneCommandeInvalide = "azef";
+            var cut = GetComponent();
+
+            var input = cut.Find("[data-martian-rover-command-panel] [data-martian-rover-command-input]");
+            input.Change(uneCommandeInvalide);
+            cut.Instance.Command.Should().Be(uneCommandeInvalide);
+            var bouton = cut.Find("[data-martian-rover-command-panel] [data-martian-rover-send-command-action]");
+            bouton.HasAttribute("disabled").Should().BeTrue();
+        }
+
         public void Dispose()
         {
             ctx.Dispose();
-        }
-    }
-  
-    class CommandValidatorStub: ICommandValidator{
-        private readonly bool result;
-        private readonly string expectedCommand;
-
-        public CommandValidatorStub()
-        {
-            expectedCommand = null;
-            result = false;
-        }
-
-        public CommandValidatorStub(bool result, string expectedCommand)
-        {
-            this.result = result;
-            this.expectedCommand = expectedCommand;
-        }
-
-        public bool Validate(string command){
-            if (command is not null && command != expectedCommand)
-                throw new Exception("invalid command");
-            
-            return result;
         }
     }
 }

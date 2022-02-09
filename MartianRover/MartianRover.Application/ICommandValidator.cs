@@ -1,4 +1,4 @@
-﻿namespace BlazorMartianRover.Components
+﻿namespace MartianRover.Application
 {
     public interface ICommandValidator
     {
