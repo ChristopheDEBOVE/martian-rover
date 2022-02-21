@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+﻿namespace MartianRoverTests;
 
-namespace MartianRoverTests;
 public static class CardinalPointHelper
 {
     const string DIRECTIONS = "NESO";
@@ -23,6 +22,7 @@ public static class CardinalPointHelper
         return DIRECTIONS[newDirectionIndex].ToString();
     }
 }
+
 public record Position(int X, int Y);
 public class MarsRover
 {

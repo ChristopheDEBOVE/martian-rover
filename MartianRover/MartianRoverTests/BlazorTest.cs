@@ -53,25 +53,31 @@ namespace MartianRoverTests
             var uneCommandeValide = "f"; 
             var cut = GetComponent();
 
-            var input =  cut.Find("[data-martian-rover-command-panel] [data-martian-rover-command-input]");
-            input.Change(uneCommandeValide);
+            var input =  cut.Find("[data-martian-rover-command-panel] [data-martian-rover-command-input]");  
+            input.Input(uneCommandeValide);
+        
+            
             cut.Instance.Command.Should().Be(uneCommandeValide);
             var bouton = cut.Find("[data-martian-rover-command-panel] [data-martian-rover-send-command-action]");
             bouton.HasAttribute("disabled").Should().BeFalse();
         }
 
-        [Fact]
-        public void Lorsque_l_utilisateur_saisi_une_commande_invalide_alors_il_ne_peut_pas_lenvoyer_au_rover()
-        {
-            var uneCommandeInvalide = "azef";
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("azef")]
+        public void Lorsque_l_utilisateur_saisi_une_commande_invalide_alors_il_ne_peut_pas_lenvoyer_au_rover(string uneCommandeInvalide)
+        { 
             var cut = GetComponent();
 
-            var input = cut.Find("[data-martian-rover-command-panel] [data-martian-rover-command-input]");
-            input.Change(uneCommandeInvalide);
+            var input = cut.Find("[data-martian-rover-command-panel] [data-martian-rover-command-input]");     
+            input.Input(uneCommandeInvalide);
+  
             cut.Instance.Command.Should().Be(uneCommandeInvalide);
             var bouton = cut.Find("[data-martian-rover-command-panel] [data-martian-rover-send-command-action]");
             bouton.HasAttribute("disabled").Should().BeTrue();
         }
+
 
         public void Dispose()
         {
