@@ -6,10 +6,7 @@
 
 @code {
 
-    [Inject]
-    public ICommandValidator  CommandValidator {get;set;}
-
     public string Command {get;set;}
 
-    public bool NePeutPasSaisir() => (!CommandValidator?.Validate(Command))??true;
+    public bool NePeutPasSaisir() => !CommandValidator.Validate(Command);
 }

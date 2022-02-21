@@ -1,8 +1,8 @@
 ﻿namespace MartianRover.Application
 {
-    public class CommandValidator : ICommandValidator
+    public static class CommandValidator
     {
-        string _acceptedValues = "fbrl";
-        public bool Validate(string command) => command is not null && command.ToCharArray().All(c => _acceptedValues.Contains(c));
+        const string _acceptedValues = "fbrl";
+        public static bool Validate(string command) => command is not null && command.ToCharArray().All(c => _acceptedValues.Contains(c));
     }
 }

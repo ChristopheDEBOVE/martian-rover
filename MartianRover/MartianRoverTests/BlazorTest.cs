@@ -17,8 +17,6 @@ namespace MartianRoverTests
         public BlazorTest()
         {
             ctx = new TestContext();
-            ctx.Services.AddSingleton<ICommandValidator>(new CommandValidator());
- 
         }
 
 
@@ -52,7 +50,6 @@ namespace MartianRoverTests
         [Fact]
         public void Lorsque_l_utilisateur_saisi_une_commande_valide_alors_il_peut_lenvoyer_au_rover()
         { 
-
             var uneCommandeValide = "f"; 
             var cut = GetComponent();
 
@@ -66,7 +63,6 @@ namespace MartianRoverTests
         [Fact]
         public void Lorsque_l_utilisateur_saisi_une_commande_invalide_alors_il_ne_peut_pas_lenvoyer_au_rover()
         {
-
             var uneCommandeInvalide = "azef";
             var cut = GetComponent();
 
