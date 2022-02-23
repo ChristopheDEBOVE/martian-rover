@@ -1,13 +1,20 @@
 @using MartianRover.Application
+@using MartianRoverTests
 <div data-martian-rover-command-panel >
     <input type="text" @bind="Command" @bind:event="oninput" data-martian-rover-command-input />
-    <button data-martian-rover-send-command-action disabled="@(NePeutPasSaisir())">Envoyer</button>
+    <button data-martian-rover-send-command-action disabled="@(NePeutPasSaisir())" @onclick="EnvoyerCommande">Envoyer</button>
 </div>
 
 @code {
+    
+    public MarsRover MarsRover {get;set;}
 
     public string Command {get;set;}
 
-    public bool NePeutPasSaisir() => !CommandValidator.Validate(Command);
+    public bool NePeutPasSaisir() => MarsRover is null || !CommandValidator.Validate(Command);
+
+    public void EnvoyerCommande(){
+        this.MarsRover.Move(Command);
+    }
 
 }
