@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# IDE0160: Convertir en namespace bloc inclus dans l'étendue
+dotnet_diagnostic.IDE0160.severity = none
